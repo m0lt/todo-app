@@ -1,19 +1,34 @@
 import { useState, useRef, useEffect, type FormEvent, type KeyboardEvent } from 'react';
-import type { Task } from '@/types/todo';
+import type { Task, Category } from '@/types/todo';
+import { CATEGORIES } from '@/types/todo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface TodoItemProps {
   task: Task;
   onToggle: (id: string) => void;
   onEdit: (id: string, description: string) => void;
   onDelete: (id: string) => void;
+  onMoveToCategory: (id: string, category: Category | undefined) => void;
 }
 
-export function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
+export function TodoItem({
+  task,
+  onToggle,
+  onEdit,
+  onDelete,
+  onMoveToCategory,
+}: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(task.description);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +65,14 @@ export function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
     }
   };
 
+  const handleCategoryChange = (value: string) => {
+    if (value === 'none') {
+      onMoveToCategory(task.id, undefined);
+    } else {
+      onMoveToCategory(task.id, value as Category);
+    }
+  };
+
   const formatDate = (date: Date): string => {
     return new Intl.DateTimeFormat('de-DE', {
       day: '2-digit',
@@ -58,6 +81,10 @@ export function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
       hour: '2-digit',
       minute: '2-digit',
     }).format(date);
+  };
+
+  const getCategoryLabel = (category: Category): string => {
+    return CATEGORIES.find((c) => c.value === category)?.label ?? category;
   };
 
   return (
@@ -100,13 +127,18 @@ export function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
             </label>
           )}
 
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
             <time
               dateTime={task.createdAt.toISOString()}
               className="text-xs text-muted-foreground"
             >
               {formatDate(task.createdAt)}
             </time>
+            {task.category && (
+              <Badge variant="secondary" className="text-xs">
+                {getCategoryLabel(task.category)}
+              </Badge>
+            )}
             {task.isUrgent && (
               <Badge variant="destructive" className="text-xs">
                 Dringend
@@ -115,7 +147,26 @@ export function TodoItem({ task, onToggle, onEdit, onDelete }: TodoItemProps) {
           </div>
         </div>
 
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
+          <Select
+            value={task.category ?? 'none'}
+            onValueChange={handleCategoryChange}
+          >
+            <SelectTrigger
+              className="w-[110px] h-8 text-xs"
+              aria-label="Kategorie ändern"
+            >
+              <SelectValue placeholder="Kategorie" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Keine</SelectItem>
+              {CATEGORIES.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {canEdit && !isEditing && (
             <Button
               variant="ghost"

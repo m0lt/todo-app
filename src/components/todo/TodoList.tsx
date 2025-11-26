@@ -1,4 +1,4 @@
-import type { Task } from '@/types/todo';
+import type { Task, Category } from '@/types/todo';
 import { TodoItem } from './TodoItem';
 
 interface TodoListProps {
@@ -6,9 +6,16 @@ interface TodoListProps {
   onToggle: (id: string) => void;
   onEdit: (id: string, description: string) => void;
   onDelete: (id: string) => void;
+  onMoveToCategory: (id: string, category: Category | undefined) => void;
 }
 
-export function TodoList({ tasks, onToggle, onEdit, onDelete }: TodoListProps) {
+export function TodoList({
+  tasks,
+  onToggle,
+  onEdit,
+  onDelete,
+  onMoveToCategory,
+}: TodoListProps) {
   if (tasks.length === 0) {
     return (
       <p className="text-center text-muted-foreground py-8">
@@ -26,6 +33,7 @@ export function TodoList({ tasks, onToggle, onEdit, onDelete }: TodoListProps) {
             onToggle={onToggle}
             onEdit={onEdit}
             onDelete={onDelete}
+            onMoveToCategory={onMoveToCategory}
           />
         </li>
       ))}

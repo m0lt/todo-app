@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Task } from '@/types/todo';
+import type { Task, Category } from '@/types/todo';
 import { createTask, isTaskUrgent } from '@/types/todo';
 
 export interface UseTodosReturn {
   todos: Task[];
-  addTodo: (description: string) => void;
+  addTodo: (description: string, category?: Category) => void;
   toggleTodo: (id: string) => void;
   editTodo: (id: string, description: string) => void;
   deleteTodo: (id: string) => void;
+  moveToCategory: (id: string, category: Category | undefined) => void;
   openCount: number;
   completedCount: number;
 }
@@ -29,11 +30,11 @@ export function useTodos(): UseTodosReturn {
     return () => clearInterval(interval);
   }, []);
 
-  const addTodo = useCallback((description: string) => {
+  const addTodo = useCallback((description: string, category?: Category) => {
     const trimmed = description.trim();
     if (!trimmed) return;
 
-    setTodos((prev) => [...prev, createTask(trimmed)]);
+    setTodos((prev) => [...prev, createTask(trimmed, category)]);
   }, []);
 
   const toggleTodo = useCallback((id: string) => {
@@ -70,6 +71,18 @@ export function useTodos(): UseTodosReturn {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
   }, []);
 
+  const moveToCategory = useCallback(
+    (id: string, category: Category | undefined) => {
+      setTodos((prev) =>
+        prev.map((todo) => {
+          if (todo.id !== id) return todo;
+          return { ...todo, category };
+        })
+      );
+    },
+    []
+  );
+
   const openCount = todos.filter((t) => t.status === 'open').length;
   const completedCount = todos.filter((t) => t.status === 'completed').length;
 
@@ -79,6 +92,7 @@ export function useTodos(): UseTodosReturn {
     toggleTodo,
     editTodo,
     deleteTodo,
+    moveToCategory,
     openCount,
     completedCount,
   };

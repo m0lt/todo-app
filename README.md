@@ -13,6 +13,7 @@ Die App läuft dann unter `http://localhost:5173`.
 
 ## Features
 
+### Kern-Funktionen
 - **Aufgaben erstellen**: Neue Aufgaben mit Beschreibung hinzufügen
 - **Status verwalten**: Aufgaben als erledigt markieren oder wiedereröffnen
 - **Bearbeiten**: Offene Aufgaben können bearbeitet werden
@@ -20,6 +21,11 @@ Die App läuft dann unter `http://localhost:5173`.
 - **Automatische Dringlichkeit**: Aufgaben werden nach 1 Minute automatisch als dringend markiert
 - **Übersicht**: Zusammenfassung der offenen und erledigten Aufgaben
 - **Accessibility**: Vollständige Tastaturnavigation und Screenreader-Unterstützung
+
+### Kategorien
+- **Kategorie zuweisen**: Aufgaben können einer Kategorie zugeordnet werden (Arbeit, Privat, Einkaufen, Sonstiges)
+- **Kategorie ändern**: Aufgaben können jederzeit in eine andere Kategorie verschoben werden
+- **Gruppierte Ansicht**: Aufgaben werden nach Kategorien gruppiert angezeigt
 
 ## Tech Stack
 
@@ -39,12 +45,13 @@ src/
 │   │   ├── TodoForm.tsx
 │   │   ├── TodoItem.tsx
 │   │   ├── TodoList.tsx
-│   │   └── TodoSummary.tsx
+│   │   ├── TodoSummary.tsx
+│   │   └── CategoryGroup.tsx
 │   └── ui/             # shadcn/ui Komponenten
 ├── hooks/
 │   └── useTodos.ts     # State-Management Hook
 ├── types/
-│   └── todo.ts         # TypeScript Typen
+│   └── todo.ts         # TypeScript Typen & Kategorien
 ├── lib/
 │   └── utils.ts        # Utility-Funktionen
 ├── App.tsx
