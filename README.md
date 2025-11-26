@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# To-Do Liste
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Eine React-Anwendung zur Verwaltung von Aufgaben mit automatischer Dringlichkeitsmarkierung.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Die App läuft dann unter `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- **Aufgaben erstellen**: Neue Aufgaben mit Beschreibung hinzufügen
+- **Status verwalten**: Aufgaben als erledigt markieren oder wiedereröffnen
+- **Bearbeiten**: Offene Aufgaben können bearbeitet werden
+- **Löschen**: Beliebige Aufgaben entfernen
+- **Automatische Dringlichkeit**: Aufgaben werden nach 1 Minute automatisch als dringend markiert
+- **Übersicht**: Zusammenfassung der offenen und erledigten Aufgaben
+- **Accessibility**: Vollständige Tastaturnavigation und Screenreader-Unterstützung
+
+## Tech Stack
+
+- **React 19** - UI Framework
+- **TypeScript** - Typsicherheit
+- **Vite 7** - Build Tool
+- **Tailwind CSS v4** - Styling
+- **shadcn/ui** - UI-Komponenten (basiert auf Radix UI)
+
+## Projektstruktur
+
 ```
+src/
+├── components/
+│   ├── todo/           # To-Do-Komponenten
+│   │   ├── TodoApp.tsx
+│   │   ├── TodoForm.tsx
+│   │   ├── TodoItem.tsx
+│   │   ├── TodoList.tsx
+│   │   └── TodoSummary.tsx
+│   └── ui/             # shadcn/ui Komponenten
+├── hooks/
+│   └── useTodos.ts     # State-Management Hook
+├── types/
+│   └── todo.ts         # TypeScript Typen
+├── lib/
+│   └── utils.ts        # Utility-Funktionen
+├── App.tsx
+├── main.tsx
+└── index.css
+```
+
+## Scripts
+
+| Script | Beschreibung |
+|--------|--------------|
+| `npm run dev` | Startet den Entwicklungsserver |
+| `npm run build` | Erstellt den Production Build |
+| `npm run lint` | Führt ESLint aus |
+| `npm run preview` | Zeigt den Production Build lokal |
