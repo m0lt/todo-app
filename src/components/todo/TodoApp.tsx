@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Task, Category } from '@/types/todo';
 import { CATEGORIES } from '@/types/todo';
 import { useTodos } from '@/hooks/useTodos';
 import { TodoForm } from './TodoForm';
-import { TodoSummary } from './TodoSummary';
+import { TodoSummary, type FilterTab } from './TodoSummary';
 import { CategoryGroup } from './CategoryGroup';
 
 type GroupedTasks = {
@@ -23,58 +23,71 @@ export function TodoApp() {
     completedCount,
   } = useTodos();
 
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('today');
+
+  const filteredTodos = useMemo(() => {
+    return todos.filter((todo) =>
+      activeFilter === 'today'
+        ? todo.status === 'open'
+        : todo.status === 'completed'
+    );
+  }, [todos, activeFilter]);
+
   const groupedTasks = useMemo((): GroupedTasks => {
     const groups: GroupedTasks = [];
 
     // Add category groups in order
     for (const cat of CATEGORIES) {
-      const tasksInCategory = todos.filter((t) => t.category === cat.value);
+      const tasksInCategory = filteredTodos.filter(
+        (t) => t.category === cat.value
+      );
       if (tasksInCategory.length > 0) {
         groups.push({ category: cat.value, tasks: tasksInCategory });
       }
     }
 
     // Add uncategorized tasks
-    const uncategorized = todos.filter((t) => !t.category);
+    const uncategorized = filteredTodos.filter((t) => !t.category);
     if (uncategorized.length > 0) {
       groups.push({ category: 'uncategorized', tasks: uncategorized });
     }
 
     return groups;
-  }, [todos]);
+  }, [filteredTodos]);
 
-  const hasAnyTasks = todos.length > 0;
+  const hasFilteredTasks = filteredTodos.length > 0;
 
   return (
     <main className="min-h-screen bg-background py-8 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <header className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">To-Do Liste</h1>
-          <p className="text-muted-foreground mt-1">
-            Verwalte deine Aufgaben einfach und übersichtlich
-          </p>
+      <div className="max-w-md mx-auto space-y-6">
+        <header className="text-center space-y-1">
+          <h1 className="text-xl font-normal tracking-tight">To-Do Liste</h1>
         </header>
 
-        <section aria-labelledby="add-task-heading">
-          <h2 id="add-task-heading" className="sr-only">
-            Neue Aufgabe hinzufügen
-          </h2>
-          <TodoForm onAdd={addTodo} />
-        </section>
+        <TodoSummary
+          openCount={openCount}
+          completedCount={completedCount}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
 
-        <TodoSummary openCount={openCount} completedCount={completedCount} />
-
-        <section aria-labelledby="task-list-heading">
+        <section
+          id="task-list"
+          role="tabpanel"
+          aria-labelledby="task-list-heading"
+        >
           <h2 id="task-list-heading" className="sr-only">
-            Aufgaben nach Kategorie
+            {activeFilter === 'today' ? 'Offene Aufgaben' : 'Erledigte Aufgaben'}
           </h2>
 
-          {!hasAnyTasks ? (
+          {!hasFilteredTasks ? (
             <p className="text-center text-muted-foreground py-8">
-              Keine Aufgaben vorhanden. Füge eine neue Aufgabe hinzu!
+              {activeFilter === 'today'
+                ? 'Keine offenen Aufgaben. Gut gemacht!'
+                : 'Noch keine erledigten Aufgaben.'}
             </p>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-3">
               {groupedTasks.map((group) => (
                 <CategoryGroup
                   key={group.category}
@@ -89,6 +102,22 @@ export function TodoApp() {
             </div>
           )}
         </section>
+
+        {/* Floating Add Form */}
+        <section
+          aria-labelledby="add-task-heading"
+          className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent pt-8"
+        >
+          <h2 id="add-task-heading" className="sr-only">
+            Neue Aufgabe hinzufügen
+          </h2>
+          <div className="max-w-md mx-auto">
+            <TodoForm onAdd={addTodo} />
+          </div>
+        </section>
+
+        {/* Spacer for fixed form */}
+        <div className="h-24" aria-hidden="true" />
       </div>
     </main>
   );

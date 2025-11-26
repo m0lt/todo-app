@@ -16,16 +16,8 @@ export function TodoList({
   onDelete,
   onMoveToCategory,
 }: TodoListProps) {
-  if (tasks.length === 0) {
-    return (
-      <p className="text-center text-muted-foreground py-8">
-        Keine Aufgaben vorhanden. Füge eine neue Aufgabe hinzu!
-      </p>
-    );
-  }
-
   return (
-    <ul className="space-y-2" aria-label="Aufgabenliste">
+    <ul className="space-y-3" aria-label="Aufgabenliste">
       {tasks.map((task) => (
         <li key={task.id}>
           <TodoItem

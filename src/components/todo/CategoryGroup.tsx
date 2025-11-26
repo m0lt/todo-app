@@ -1,6 +1,8 @@
 import type { Task, Category } from '@/types/todo';
 import { CATEGORIES } from '@/types/todo';
 import { TodoList } from './TodoList';
+import { Briefcase, Home, ShoppingCart, MoreHorizontal, Inbox } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CategoryGroupProps {
   category: Category | 'uncategorized';
@@ -10,6 +12,14 @@ interface CategoryGroupProps {
   onDelete: (id: string) => void;
   onMoveToCategory: (id: string, category: Category | undefined) => void;
 }
+
+const CATEGORY_ICONS: Record<Category | 'uncategorized', typeof Briefcase> = {
+  work: Briefcase,
+  personal: Home,
+  shopping: ShoppingCart,
+  other: MoreHorizontal,
+  uncategorized: Inbox,
+};
 
 export function CategoryGroup({
   category,
@@ -26,20 +36,27 @@ export function CategoryGroup({
     return CATEGORIES.find((c) => c.value === category)?.label ?? category;
   };
 
-  const openCount = tasks.filter((t) => t.status === 'open').length;
-  const completedCount = tasks.filter((t) => t.status === 'completed').length;
+  const Icon = CATEGORY_ICONS[category];
 
   return (
     <section aria-labelledby={`category-${category}`}>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center gap-2 mb-3">
+        <Icon
+          className={cn(
+            'size-4',
+            category === 'uncategorized'
+              ? 'text-muted-foreground'
+              : 'text-foreground'
+          )}
+        />
         <h3
           id={`category-${category}`}
-          className="text-lg font-semibold text-foreground"
+          className="text-sm font-medium text-foreground"
         >
           {getCategoryLabel()}
         </h3>
-        <span className="text-sm text-muted-foreground">
-          {openCount} offen, {completedCount} erledigt
+        <span className="text-xs text-muted-foreground">
+          ({tasks.length})
         </span>
       </div>
       <TodoList
